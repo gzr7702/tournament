@@ -60,7 +60,7 @@ def registerPlayer(name):
     try:
         db = connect()
         cursor = db.cursor()
-        cursor.execute("INSERT INTO player (name) VALUES ('%s');" % name)
+        cursor.execute("INSERT INTO player (name, wins, matches) VALUES (%s, %s, %s);" , (name, 0, 0))
         db.commit()
         db.close()
     except psycopg2.Error as e:
@@ -81,6 +81,20 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    standings = []
+    try:
+        db = connect()
+        cursor = db.cursor()
+        cursor.execute(' SELECT (id, name, wins, matches) FROM player order by(matches);')
+        results = cursor.fetchall()
+        db.close()
+    except psycopg2.Error as e:
+        print(e)
+
+    for result in results:
+        standings.append(result[0])
+
+    return standings 
 
 
 def reportMatch(winner, loser):
