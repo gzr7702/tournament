@@ -92,7 +92,13 @@ def playerStandings():
         print(e)
 
     for result in results:
-        standings.append(result[0])
+        stripped_record = result[0].lstrip('(').rstrip(')')
+        record_list = stripped_record.split(',')
+        record_list[1] = record_list[1].strip('\"')
+        record_list[2] = int(record_list[2])
+        record_list[3] = int(record_list[3])
+        record = tuple(record_list)
+        standings.append(record)
 
     return standings 
 
