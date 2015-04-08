@@ -110,6 +110,16 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+
+    try:
+        db = connect()
+        cursor = db.cursor()
+        cursor.execute("UPDATE player SET wins = wins+1, matches = matches+1 WHERE id=%s;" % winner)
+        cursor.execute("UPDATE player SET matches = matches+1 WHERE id=%s;" % loser)
+        db.commit()
+        db.close()
+    except psycopg2.Error as e:
+        print(e)
  
  
 def swissPairings():
