@@ -60,7 +60,8 @@ def registerPlayer(name):
     try:
         db = connect()
         cursor = db.cursor()
-        cursor.execute("INSERT INTO player (name, wins, matches) VALUES (%s, %s, %s);" , (name, 0, 0))
+        command = "INSERT INTO player (name, wins, matches) VALUES (%s, %s, %s);"
+        cursor.execute(command, (name, 0, 0))
         db.commit()
         db.close()
     except psycopg2.Error as e:
@@ -114,8 +115,10 @@ def reportMatch(winner, loser):
     try:
         db = connect()
         cursor = db.cursor()
-        cursor.execute("UPDATE player SET wins = wins+1, matches = matches+1 WHERE id=%s;" % winner)
-        cursor.execute("UPDATE player SET matches = matches+1 WHERE id=%s;" % loser)
+        command = "UPDATE player SET wins = wins+1, matches = matches+1 WHERE id=%s;"
+        cursor.execute(command, (winner,))
+        command = "UPDATE player SET matches = matches+1 WHERE id=%s;"
+        cursor.execute(command, (loser,))
         db.commit()
         db.close()
     except psycopg2.Error as e:
