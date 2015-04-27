@@ -60,8 +60,11 @@ def registerPlayer(name):
     try:
         db = connect()
         cursor = db.cursor()
-        command = "INSERT INTO player (name, wins, matches) VALUES (%s, %s, %s);"
-        cursor.execute(command, (name, 0, 0))
+        #command = "INSERT INTO player (name, wins, matches) VALUES ('%s', '%s', '%s');"
+        #cursor.execute(command, (name, 0, 0))
+        command = "INSERT INTO player (name, wins, matches) VALUES (%(name)s, %(wins)s, %(matches)s)"
+        variables = {'name': name, 'wins': 0, 'matches': 0}
+        cursor.execute(command, variables)
         db.commit()
         db.close()
     except psycopg2.Error as e:
@@ -86,22 +89,14 @@ def playerStandings():
     try:
         db = connect()
         cursor = db.cursor()
-        cursor.execute(' SELECT (id, name, wins, matches) FROM player order by(matches);')
+        cursor.execute(' SELECT id, name, wins, matches FROM player order by(matches);')
         results = cursor.fetchall()
         db.close()
     except psycopg2.Error as e:
         print(e)
 
-    for result in results:
-        stripped_record = result[0].lstrip('(').rstrip(')')
-        record_list = stripped_record.split(',')
-        record_list[1] = record_list[1].strip('\"')
-        record_list[2] = int(record_list[2])
-        record_list[3] = int(record_list[3])
-        record = tuple(record_list)
-        standings.append(record)
+    return results
 
-    return standings 
 
 
 def reportMatch(winner, loser):
@@ -140,5 +135,26 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+
+    players = []
+
+    try:
+        db = connect()
+        cursor = db.cursor()
+        cursor.execute('SELECT id, name FROM player order by(matches);')
+        results = cursor.fetchall()
+        db.close()
+    except psycopg2.Error as e:
+        print(e)
+
+    #import pdb; pdb.set_trace()
+
+    while results:
+        player1 = results.pop()
+        player2 = results.pop()
+        player_tuple = (player1[0], player1[1], player2[0], player2[1])
+        players.append(player_tuple)
+
+    return players
 
 
