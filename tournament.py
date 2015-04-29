@@ -141,20 +141,22 @@ def swissPairings():
     try:
         db = connect()
         cursor = db.cursor()
-        cursor.execute('SELECT id, name FROM player order by(matches);')
+        #cursor.execute('SELECT id, name FROM player order by(matches);')
+        cursor.execute('SELECT id, name FROM player order by(wins);')
         results = cursor.fetchall()
         db.close()
     except psycopg2.Error as e:
         print(e)
 
-    #import pdb; pdb.set_trace()
 
     while results:
-        player1 = results.pop()
         player2 = results.pop()
+        player1 = results.pop()
         player_tuple = (player1[0], player1[1], player2[0], player2[1])
         players.append(player_tuple)
+    #import pdb; pdb.set_trace()
 
+    players.reverse()
     return players
 
 
