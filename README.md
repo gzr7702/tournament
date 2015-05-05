@@ -28,6 +28,8 @@ everything is working:
 
 python tournament_test.py
 
+This should tell you that all tests have passed and you are ready to use the library.
+
 Files:
 
 tournament.py - the main module
