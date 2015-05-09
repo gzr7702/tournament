@@ -60,10 +60,8 @@ def registerPlayer(name):
     try:
         db = connect()
         cursor = db.cursor()
-        #command = "INSERT INTO player (name, wins, matches) VALUES ('%s', '%s', '%s');"
-        #cursor.execute(command, (name, 0, 0))
-        command = "INSERT INTO player (name, wins, matches) VALUES (%(name)s, %(wins)s, %(matches)s)"
-        variables = {'name': name, 'wins': 0, 'matches': 0}
+        command = "INSERT INTO player (name) VALUES (%(name)s)"
+        variables = {'name': name}
         cursor.execute(command, variables)
         db.commit()
         db.close()
