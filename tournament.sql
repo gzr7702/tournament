@@ -3,12 +3,14 @@
 --
 
 
-CREATE TABLE player (name TEXT,
-                     wins INTEGER,
-                     matches INTEGER,
-                     id SERIAL );
+CREATE TABLE player (
+                    id SERIAL primary key,
+					name VARCHAR(75)
+					);
 
-CREATE TABLE match (round INTEGER,
-                     player1 TEXT,
-                     player2 TEXT,
-                     id SERIAL );
+CREATE TABLE match (
+                    id SERIAL primary key,
+					round INTEGER,
+                    winner INTEGER REFERENCES player (id),
+                    loser INTEGER REFERENCES player (id)
+                    );
