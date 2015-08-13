@@ -68,8 +68,6 @@ def registerPlayer(name):
     except psycopg2.Error as e:
         print(e)
 
-
-
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
 
@@ -87,7 +85,7 @@ def playerStandings():
     try:
         db = connect()
         cursor = db.cursor()
-        cursor.execute(' SELECT id, name, wins, matches FROM player order by(matches);')
+        cursor.execute('select player.id, player.name, count(match.winner) as win, count(match.id) as matches from player left join match on player.id=match.winner group by player.id;')
         results = cursor.fetchall()
         db.close()
     except psycopg2.Error as e:
@@ -108,7 +106,7 @@ def reportMatch(winner, loser):
     try:
         db = connect()
         cursor = db.cursor()
-        command = "UPDATE player SET wins = wins+1, matches = matches+1 WHERE id=%s;"
+        command = " UPDATE player SET wins = wins+1, matches = matches+1 WHERE id=%s;"
         cursor.execute(command, (winner,))
         command = "UPDATE player SET matches = matches+1 WHERE id=%s;"
         cursor.execute(command, (loser,))
