@@ -20,7 +20,6 @@ CREATE TABLE match (
                     loser INTEGER REFERENCES player (id)
                     );
 
-CREATE VIEW wins as 
-	select player.id, count(*) from player join match 
-	on match.winner = player.id 
-	group by player.id;
+CREATE VIEW match_count AS SELECT COUNT(*)
+			FROM match
+			GROUP BY winner, loser; 

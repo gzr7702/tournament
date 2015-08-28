@@ -85,7 +85,11 @@ def playerStandings():
     try:
         db = connect()
         cursor = db.cursor()
-        cursor.execute('select player.id, player.name, count(match.winner) as win, count(match.id) as matches from player left join match on player.id=match.winner group by player.id;')
+        sql_string = """select player.id, player.name, count(match.winner) 
+                        as win, count(match.loser + match.winner) as matches 
+                        from player left join match on player.id=match.winner 
+                        group by player.id;"""
+        cursor.execute(sql_string)
         results = cursor.fetchall()
         db.close()
     except psycopg2.Error as e:
@@ -106,10 +110,23 @@ def reportMatch(winner, loser):
     try:
         db = connect()
         cursor = db.cursor()
-        command = " UPDATE player SET wins = wins+1, matches = matches+1 WHERE id=%s;"
-        cursor.execute(command, (winner,))
-        command = "UPDATE player SET matches = matches+1 WHERE id=%s;"
-        cursor.execute(command, (loser,))
+
+        cursor.execute("SELECT round from match ORDER BY round DESC;")
+        result = cursor.fetchone()
+        next_round = None
+        #import pdb; pdb.set_trace()
+        if result:
+            latest_round = result[0]
+            next_round = latest_round + 1
+        else:
+            next_round = 1
+
+
+        command = """INSERT INTO match (round, winner, loser) VALUES 
+                    (%(next_round)s, %(winner)s, %(loser)s)"""
+        variables = {'next_round': next_round,'winner': winner, 'loser': loser}
+        cursor.execute(command, variables)
+
         db.commit()
         db.close()
     except psycopg2.Error as e:
